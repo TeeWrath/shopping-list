@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/screens/grocery.dart';
-import 'package:shopping_list/screens/new_item.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
