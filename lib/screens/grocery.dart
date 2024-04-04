@@ -36,6 +36,13 @@ class _GroceryScreenState extends State<GroceryScreen> {
       });
     }
 
+    if (response.body == 'null') {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
     final Map<String, dynamic> loadedData = await json.decode(response.body);
 
     final List<GroceryItem> loadedItems = [];
