@@ -15,6 +15,7 @@ class GroceryScreen extends StatefulWidget {
 
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> _groceryItems = [];
+  var _isLoading = true;
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
     }
     setState(() {
       _groceryItems = loadedItems;
+      _isLoading = false;
     });
   }
 
@@ -71,6 +73,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
   Widget build(BuildContext context) {
     Widget groceryScreen =
         const Center(child: Text('Nothing here, try adding grocery items'));
+
+    if(_isLoading){
+      groceryScreen = const Center(child: CircularProgressIndicator(),);
+    }
 
     if (_groceryItems.isNotEmpty) {
       groceryScreen = ListView.builder(
