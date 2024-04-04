@@ -16,6 +16,7 @@ class GroceryScreen extends StatefulWidget {
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> _groceryItems = [];
   var _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -28,6 +29,12 @@ class _GroceryScreenState extends State<GroceryScreen> {
         'shopping-list.json');
 
     final response = await http.get(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _error = 'Failed to fetch data, please try again later';
+      });
+    }
 
     final Map<String, dynamic> loadedData = await json.decode(response.body);
 
@@ -74,8 +81,14 @@ class _GroceryScreenState extends State<GroceryScreen> {
     Widget groceryScreen =
         const Center(child: Text('Nothing here, try adding grocery items'));
 
-    if(_isLoading){
-      groceryScreen = const Center(child: CircularProgressIndicator(),);
+    if (_isLoading) {
+      groceryScreen = const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (_error != null) {
+      groceryScreen = Center(child: Text(_error!));
     }
 
     if (_groceryItems.isNotEmpty) {
