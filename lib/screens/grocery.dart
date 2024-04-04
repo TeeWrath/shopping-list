@@ -28,32 +28,37 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
     final response = await http.get(url);
 
-    final Map<String, dynamic> loadedData =
-        await json.decode(response.body);
+    final Map<String, dynamic> loadedData = await json.decode(response.body);
 
-    final List<GroceryItem> _loadedItems = [];
+    final List<GroceryItem> loadedItems = [];
 
     for (final item in loadedData.entries) {
       final category = categories.entries
           .firstWhere((catItem) => catItem.value.name == item.value['category'])
           .value;
 
-      _loadedItems.add(GroceryItem(
+      loadedItems.add(GroceryItem(
           id: item.key,
           name: item.value['name'],
           quantity: item.value['quantity'],
           category: category));
     }
     setState(() {
-      _groceryItems = _loadedItems;
+      _groceryItems = loadedItems;
     });
   }
 
   void _addItem() async {
-    Navigator.push<GroceryItem>(context,
+    final newItem = await Navigator.push<GroceryItem>(context,
         MaterialPageRoute(builder: (context) => const NewItemScreen()));
 
-    _loadItems();
+    if (newItem == null) {
+      return;
+    }
+
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   void _removeItem(GroceryItem item) {

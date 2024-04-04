@@ -4,6 +4,8 @@ import 'package:shopping_list/models/category.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shopping_list/models/grocery_item.dart';
+
 class NewItemScreen extends StatefulWidget {
   const NewItemScreen({super.key});
 
@@ -32,11 +34,16 @@ class _NewItemScreenState extends State<NewItemScreen> {
             'category': _selectedCategory.name,
           }));
 
+      final Map<String, dynamic> resData = await json.decode(response.body);
       if (!context.mounted) {
         return;
       }
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: resData['name'],
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory));
     }
   }
 
