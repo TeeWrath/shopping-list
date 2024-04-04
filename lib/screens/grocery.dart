@@ -28,40 +28,41 @@ class _GroceryScreenState extends State<GroceryScreen> {
     final url = Uri.https('shopping-list-66ed5-default-rtdb.firebaseio.com',
         'shopping-list.json');
 
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode >= 400) {
-      setState(() {
-        _error = 'Failed to fetch data, please try again later';
-      });
-    }
+      if (response.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
-    if (response.body == 'null') {
+      final Map<String, dynamic> loadedData = await json.decode(response.body);
+
+      final List<GroceryItem> loadedItems = [];
+
+      for (final item in loadedData.entries) {
+        final category = categories.entries
+            .firstWhere(
+                (catItem) => catItem.value.name == item.value['category'])
+            .value;
+
+        loadedItems.add(GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category));
+      }
       setState(() {
+        _groceryItems = loadedItems;
         _isLoading = false;
       });
-      return;
+    } catch (e) {
+      setState(() {
+        _error = 'Something Went Wrong. Please try again later';
+      });
     }
-
-    final Map<String, dynamic> loadedData = await json.decode(response.body);
-
-    final List<GroceryItem> loadedItems = [];
-
-    for (final item in loadedData.entries) {
-      final category = categories.entries
-          .firstWhere((catItem) => catItem.value.name == item.value['category'])
-          .value;
-
-      loadedItems.add(GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category));
-    }
-    setState(() {
-      _groceryItems = loadedItems;
-      _isLoading = false;
-    });
   }
 
   void _addItem() async {
